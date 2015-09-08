@@ -17,12 +17,9 @@ module.exports = function (gruntOrShipit) {
     var shipit = utils.getShipit(gruntOrShipit);
 
     return createWorkspace()
-    .then(initRepository)
-    .then(addRemote)
     .then(fetch)
     .then(checkout)
     .then(reset)
-    .then(merge)
     .then(function () {
       shipit.emit('fetched');
     });
@@ -93,9 +90,10 @@ module.exports = function (gruntOrShipit) {
      */
 
     function fetch() {
-      var fetchCommand = 'git fetch' +
+      var fetchCommand = 'git clone ' + shipit.config.repositoryUrl +
         (shipit.config.shallowClone ? ' --depth=1 ' : ' ') +
-        'shipit -p';
+        (shipit.config.branch ? ' --branch=' + shipit.config.branch + ' ' : ' ')
+        + ' ' + shipit.config.workspace;
 
       shipit.log('Fetching repository "%s"', shipit.config.repositoryUrl);
 
